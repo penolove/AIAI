@@ -36,7 +36,7 @@ BitBoard Fib2584Ai::parseArray(int board[4][4]){
 
 MoveDirection Fib2584Ai::generateMove(int board[4][4])
 {
-	MoveDirection Move= SerachTree(board,3);
+	MoveDirection Move= SerachTree(board,2);
 	return Move;
 }
 
@@ -48,7 +48,9 @@ void Fib2584Ai::gameOver(int board[4][4], int iScore)
 MoveDirection Fib2584Ai::SerachTree(int board[4][4],int iteration)
 {
 	MoveDirection randomMove = static_cast<MoveDirection>(rand() % 4);
-	
+	//SerachTree(board,0) means find the first layer soultions
+	//SerachTree(board,1) means find the first~second layer soultions	
+	//SerachTree(board,2) means find the first~third layer soultions
 	GameBoardte gb;
 	BitBoard parse= parseArray(board);
 	gb.board_=parse;
