@@ -19,7 +19,7 @@ public:
 
 	BitBoard parseArray(int board[4][4]);	
 	MoveDirection SerachTree(int board[4][4],int iteration);	
-	MoveDirection NSerachTree(int board[4][4],int iteration);	
+	void SerachTree_true(int board[4][4],int iteration,int &score,MoveDirection &direction);	
 
 	static int fibonacci_[32];
 	/**********************************

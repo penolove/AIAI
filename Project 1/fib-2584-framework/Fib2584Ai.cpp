@@ -36,7 +36,10 @@ BitBoard Fib2584Ai::parseArray(int board[4][4]){
 
 MoveDirection Fib2584Ai::generateMove(int board[4][4])
 {
-	MoveDirection Move= SerachTree(board,2);
+	//MoveDirection Move= SerachTree(board,2);
+	int score;
+	MoveDirection Move = static_cast<MoveDirection>(rand() % 4);
+	SerachTree_true(board,3,score,Move);
 	return Move;
 }
 
@@ -94,6 +97,42 @@ MoveDirection Fib2584Ai::SerachTree(int board[4][4],int iteration)
 	//cout<<"action is : "<< temp_count<<endl;
 	return randomMove;
 }
+
+void Fib2584Ai::SerachTree_true(int board[4][4],int iteration,int &score,MoveDirection &direction)
+{
+	GameBoardte gb;
+	BitBoard parse= parseArray(board);
+	gb.board_=parse;
+	int tempScore[4];
+	int temp_max=0;
+	if(iteration>0)
+	{
+		for(int i=0;i<4;i++)
+		{
+			gb.board_=parse;
+			int board_temp[4][4];
+			MoveDirection TrialMove = static_cast<MoveDirection>(i);
+			GameBoardte originalBoard = gb;
+			tempScore[i]=gb.move(TrialMove);
+			if(originalBoard == gb){
+				continue;
+			}
+			if(!gb.terminated()){
+				gb.addRandomTile();
+			}else{
+				continue;
+			}
+			gb.getArrayBoard(board_temp);
+			SerachTree_true(board_temp,iteration-1,tempScore[i],TrialMove);
+			if(tempScore[i]>temp_max){
+				temp_max=tempScore[i];
+				direction = static_cast<MoveDirection>(i);
+			}
+		}
+		score+=temp_max;
+	}
+
+}	
 /**********************************
 You can implement any additional functions
 you may need.
