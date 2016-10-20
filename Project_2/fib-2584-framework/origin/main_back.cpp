@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cstdlib>
 #include "Fib2584/GameBoard.h"
-#include "Fib2584/BitBoard.h"
 #include "Fib2584/GameBoardte.h"
 #include "Fib2584/MoveDirection.h"
 #include "Fib2584/Statistic.h"
@@ -26,60 +25,25 @@ int main(int argc, char* argv[])
 	Statistic statistic;
 	statistic.setStartTime();
 	// play each round
-	int mean=0;	
+	
 	for(int i = 0;i < iPlayRounds;i++) {
-		GameBoardte gameBoard;
+		GameBoard gameBoard;
 		gameBoard.initialize();
 		int iScore = 0;
 		int arrayBoard[4][4];
-		int afsBoard[4][4];
-		int adRnBoard[4][4];
-		/*
 		while(!gameBoard.terminated()) {
 			gameBoard.getArrayBoard(arrayBoard);
+			//cout<<"====current gameboard===="<<endl;
+			//gameBoard.showBoard();
 			MoveDirection moveDirection = ai.generateMove(arrayBoard);
+
 			GameBoard originalBoard = gameBoard;
 			iScore += gameBoard.move(moveDirection);
 			if(originalBoard == gameBoard)
 				continue;
 			statistic.increaseOneMove();
-			gameBoard.addRandomTile();
-		}*/
 
-		while(!gameBoard.terminated()) {
-			gameBoard.getArrayBoard(arrayBoard);
-			MoveDirection moveDirection;
-			//cout<<"evalutation"<<endl;
-			double score_max=0;
-			int temp=0;
-			for(int i=0;i<4;i++)
-			{
-				MoveDirection TrialMove = static_cast<MoveDirection>(i);
-				double score=ai.Evaluate(arrayBoard,TrialMove);
-				//cout<<"current score:"<<score<<endl;
-				if(score>score_max)
-				{
-					score_max=score;
-					moveDirection=TrialMove;
-					temp=i;
-				}
-			}
-			//cout<<"current move:"<<temp<<endl;
-			//cout<<"Make"<<endl;
-			iScore+=ai.MakeMove(arrayBoard,moveDirection,afsBoard,adRnBoard);
-			if(1==1){
-			//	cout<<"Learn"<<endl;
-				ai.LearnEvaluation(afsBoard,adRnBoard);
-			}
-			//cout<<"parse"<<endl;
-			BitBoard parse= ai.parseArray(adRnBoard);
-			gameBoard.board_=parse;
-			
-		}
-		mean+=iScore;
-		if(i%300==0){
-			cout<<"for game "<<i<<": "<<mean/300<<endl;
-			mean=0;
+			gameBoard.addRandomTile();
 		}
 		gameBoard.getArrayBoard(arrayBoard);
 		ai.gameOver(arrayBoard, iScore);

@@ -5,6 +5,7 @@
 #include "Fib2584/BitBoard.h"
 #include <algorithm>
 #include <iterator>
+#include <map>
 int Fib2584Ai::fibonacci_[32] = {0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040, 1346269, 2178309};
 Fib2584Ai::Fib2584Ai()
 {
@@ -36,10 +37,14 @@ BitBoard Fib2584Ai::parseArray(int board[4][4]){
 
 MoveDirection Fib2584Ai::generateMove(int board[4][4])
 {
-	//MoveDirection Move= SerachTree(board,2);
-	int score;
 	MoveDirection Move = static_cast<MoveDirection>(rand() % 4);
+	//MoveDirection Move= SerachTree(board,2);
+	
+	/*-----------------n-serachtree---------------------------
+	int score;
 	SerachTree_true(board,3,score,Move);
+	*/
+
 	return Move;
 }
 
@@ -132,7 +137,217 @@ void Fib2584Ai::SerachTree_true(int board[4][4],int iteration,int &score,MoveDir
 		score+=temp_max;
 	}
 
+}
+
+//------------------------project2-----------------------------
+
+int Fib2584Ai::computeAfterState(int board[4][4],MoveDirection action,int afsBoard[4][4] )
+{
+	GameBoardte gb;
+	BitBoard parse= parseArray(board);
+	gb.board_=parse;
+	int score ;	
+	GameBoardte originalBoard = gb;
+	if(!gb.terminated()){
+		score = gb.move(action);
+		while(gb==originalBoard){
+			MoveDirection Move = static_cast<MoveDirection>(rand() % 4);
+			score=gb.move(Move);
+			//score=0;
+		}	
+	}else{
+		gb.getArrayBoard(afsBoard);
+		return -2;
+	}
+	gb.getArrayBoard(afsBoard);
+	return score;
+};
+
+double Fib2584Ai::Evaluate(int board[4][4],MoveDirection action)
+{	int afsBoard[4][4];
+	int r= computeAfterState(board,action,afsBoard);
+	//cout<<" r is :"<<r<<endl;
+	//cout<<"estimateScoreV is :"<<estimateScoreV(afsBoard)<<endl;
+	return estimateScoreV(afsBoard)+r;
+};
+
+void Fib2584Ai::LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4])
+{	double score_max=-100;
+	MoveDirection Move = static_cast<MoveDirection>(rand() % 4);
+	//arg_max
+	for(int i=0;i<4;i++)
+	{
+		MoveDirection TrialMove = static_cast<MoveDirection>(i);
+		double score=Evaluate(adRnBoard,TrialMove);
+		if(score>score_max)
+		{
+			score_max=score;
+			Move=TrialMove;
+		}
+	}
+	//compute_state
+	int afsBoard_next[4][4];
+	int r=computeAfterState(adRnBoard,Move,afsBoard_next);
+	//loss=r-score_max;
+	double delta_=(r+estimateScoreV(afsBoard_next)-estimateScoreV(afsBoard));
+	updateWeights(afsBoard,delta_,0.05);
 }	
+double Fib2584Ai::MakeMove(int board[4][4],MoveDirection action,int afsBoard[4][4],int adRnBoard[4][4]){
+	int r= computeAfterState(board,action,afsBoard);
+	GameBoardte gb;
+	BitBoard parse= parseArray(afsBoard);
+	gb.board_=parse;
+	if(!gb.terminated()){
+		gb.addRandomTile();
+	}else{
+		gb.getArrayBoard(adRnBoard);
+		return 0;
+	}
+	gb.getArrayBoard(adRnBoard);
+	return r;
+};
+void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate)
+{
+	GameBoardte gb;
+	BitBoard parse= parseArray(board);
+	gb.board_=parse;
+	BitBoard parse_row;
+	std::map<unsigned long long ,double>::iterator it ;
+	//++++++++++++++++update col++++++++++++++++
+	parse_row= gb.getColumn(0);
+	it = para_col_1.find(int(parse_row));
+	if(it!= para_col_1.end()){
+		it->second+=delta_*learningRate;
+	}else{
+		para_col_1[int(parse_row)]=delta_*learningRate;
+	}
+	parse_row= gb.getColumn(1);
+	it = para_col_2.find(int(parse_row));
+	if(it!= para_col_2.end()){
+		it->second+=delta_*learningRate;
+	}else{
+		para_col_2[int(parse_row)]=delta_*learningRate;
+	}
+	parse_row= gb.getColumn(2);
+	it = para_col_3.find(int(parse_row));
+	if(it!= para_col_3.end()){
+		it->second+=delta_*learningRate;
+	}else{
+		para_col_3[int(parse_row)]=delta_*learningRate;
+	}
+	parse_row= gb.getColumn(3);
+	it = para_col_4.find(int(parse_row));
+	if(it!= para_col_4.end()){
+		it->second+=delta_*learningRate;
+	}else{
+		para_col_4[int(parse_row)]=delta_*learningRate;
+	}
+	//++++++++++++++++update row++++++++++++++++
+	parse_row= gb.getRow(0)&1048575;
+	it = para_row_1.find(int(parse_row));
+	if(it!= para_row_1.end()){
+		it->second+=delta_*learningRate;
+	}else{
+		para_col_1[int(parse_row)]=delta_*learningRate;
+	}
+	parse_row= gb.getRow(1)&1048575;
+	it = para_row_2.find(int(parse_row));
+	if(it!= para_row_2.end()){
+		it->second+=delta_*learningRate;
+	}else{
+		para_col_2[int(parse_row)]=delta_*learningRate;
+	}
+	parse_row= gb.getRow(2)&1048575;
+	it = para_row_3.find(int(parse_row));
+	if(it!= para_row_3.end()){
+		it->second+=delta_*learningRate;
+	}else{
+		para_col_3[int(parse_row)]=delta_*learningRate;
+	}
+	parse_row= gb.getRow(3)&1048575;
+	it = para_row_4.find(int(parse_row));
+	if(it!= para_row_4.end()){
+		it->second+=delta_*learningRate;
+	}else{
+		para_col_4[int(parse_row)]=delta_*learningRate;
+	}
+};	
+double Fib2584Ai::estimateScoreV(int board[4][4]){
+	GameBoardte gb;
+	BitBoard parse= parseArray(board);
+	gb.board_=parse;
+	if(gb.terminated()){
+		return 0;
+	}
+	double score=0;
+	BitBoard parse_row;
+	std::map<unsigned long long ,double>::iterator it ;
+	//-----parse column--------
+	parse_row= gb.getColumn(0);
+	it = para_col_1.find(int(parse_row));
+	if(it!= para_col_1.end()){
+		score+=it->second;
+	}
+	parse_row= gb.getColumn(1);
+	it = para_col_2.find(int(parse_row));
+	if(it!= para_col_2.end()){
+		score+=it->second;
+	}
+	parse_row= gb.getColumn(2);
+	it = para_col_3.find(int(parse_row));
+	if(it!= para_col_3.end()){
+		score+=it->second;
+	}
+	parse_row= gb.getColumn(3);
+	it = para_col_4.find(int(parse_row));
+	if(it!= para_col_4.end()){
+		score+=it->second;
+	}
+	//parse row
+	parse_row= gb.getRow(0)&1048575;
+	it = para_row_1.find(int(parse_row));
+	if(it!= para_row_1.end()){
+		score+=it->second;
+	}
+	parse_row= gb.getRow(1)&1048575;
+	it = para_row_2.find(int(parse_row));
+	if(it!= para_row_2.end()){
+		score+=it->second;
+	}
+	parse_row= gb.getRow(2)&1048575;
+	it = para_row_3.find(int(parse_row));
+	if(it!= para_row_3.end()){
+		score+=it->second;
+	}
+	parse_row= gb.getRow(3)&1048575;
+	it = para_row_4.find(int(parse_row));
+	if(it!= para_row_4.end()){
+		score+=it->second;
+	}
+	return score;
+};
+/*
+{
+	
+	GameBoardte gb;
+	BitBoard parse= parseArray(board);
+	gb.board_=parse;
+	GameBoardte gb_row;
+	//BitBoard parse_row= gb.getrow(2)&1048575;
+	BitBoard parse_row= gb.getColumn(2);
+	gb_row.board_=parse_row;
+	cout<<"====current===="<<endl;
+	gb.showBoard();
+	cout<<"====getrow======"<<endl;
+	gb_row.showBoard();
+	int stop;
+	std::map<unsigned long long ,double>::iterator it = qqo.find(int(parse_row));
+	if(it!= qqo.end()){
+		it->second= it->second+1.0;
+	}
+	cout<<"key: "<<int(parse_row)<<", value: "<<qqo[int(parse_row)]<<endl;
+	cin>>stop;
+}*/	
 /**********************************
 You can implement any additional functions
 you may need.

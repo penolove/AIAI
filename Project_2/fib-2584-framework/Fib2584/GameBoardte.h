@@ -26,9 +26,9 @@ public:
 	void showBoard();
 	bool operator==(GameBoardte gameBoard);
 	BitBoard board_;
-private:
 	BitBoard getRow(int row);
 	BitBoard getColumn(int column);
+private:
 	BitBoard restoreRow(BitBoard rowBits, int row);
 	BitBoard restoreColumn(BitBoard columnBits, int column);
 	int countEmptyTile();
