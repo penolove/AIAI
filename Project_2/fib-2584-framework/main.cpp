@@ -34,17 +34,6 @@ int main(int argc, char* argv[])
 		int arrayBoard[4][4];
 		int afsBoard[4][4];
 		int adRnBoard[4][4];
-		/*
-		while(!gameBoard.terminated()) {
-			gameBoard.getArrayBoard(arrayBoard);
-			MoveDirection moveDirection = ai.generateMove(arrayBoard);
-			GameBoard originalBoard = gameBoard;
-			iScore += gameBoard.move(moveDirection);
-			if(originalBoard == gameBoard)
-				continue;
-			statistic.increaseOneMove();
-			gameBoard.addRandomTile();
-		}*/
 
 		while(!gameBoard.terminated()) {
 			gameBoard.getArrayBoard(arrayBoard);
@@ -56,7 +45,6 @@ int main(int argc, char* argv[])
 			{
 				MoveDirection TrialMove = static_cast<MoveDirection>(i);
 				double score=ai.Evaluate(arrayBoard,TrialMove);
-				//cout<<"current score:"<<score<<endl;
 				if(score>score_max)
 				{
 					score_max=score;
@@ -67,6 +55,7 @@ int main(int argc, char* argv[])
 			//cout<<"current move:"<<temp<<endl;
 			//cout<<"Make"<<endl;
 			iScore+=ai.MakeMove(arrayBoard,moveDirection,afsBoard,adRnBoard);
+			statistic.increaseOneMove();
 			if(1==1){
 			//	cout<<"Learn"<<endl;
 				ai.LearnEvaluation(afsBoard,adRnBoard);

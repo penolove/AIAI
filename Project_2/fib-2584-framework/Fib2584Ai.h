@@ -25,9 +25,9 @@ public:
 	static int fibonacci_[32];
 	
 	//--------- Project2: members-I-created-------------//
+	double random01();
 	double MakeMove(int board[4][4],MoveDirection action,int afsBoard[4][4],int adRnBoard[4][4]);
 	//+++retrun double r , afsBoard ,adRnBoard++++//
-	//--------------------done--------------------------//
 	int computeAfterState(int board[4][4],MoveDirection action,int afsBoard[4][4] );
 	//+++return int r , afsBoard ++++++++++++++++//
 	double estimateScoreV(int board[4][4]);

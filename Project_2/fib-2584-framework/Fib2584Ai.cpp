@@ -141,6 +141,10 @@ void Fib2584Ai::SerachTree_true(int board[4][4],int iteration,int &score,MoveDir
 
 //------------------------project2-----------------------------
 
+double Fib2584Ai::random01()
+{
+	return (double)rand() / ((double)RAND_MAX + 1);
+};
 int Fib2584Ai::computeAfterState(int board[4][4],MoveDirection action,int afsBoard[4][4] )
 {
 	GameBoardte gb;
@@ -190,7 +194,7 @@ void Fib2584Ai::LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4])
 	int r=computeAfterState(adRnBoard,Move,afsBoard_next);
 	//loss=r-score_max;
 	double delta_=(r+estimateScoreV(afsBoard_next)-estimateScoreV(afsBoard));
-	updateWeights(afsBoard,delta_,0.05);
+	updateWeights(afsBoard,delta_,0.0001);
 }	
 double Fib2584Ai::MakeMove(int board[4][4],MoveDirection action,int afsBoard[4][4],int adRnBoard[4][4]){
 	int r= computeAfterState(board,action,afsBoard);
@@ -287,20 +291,32 @@ double Fib2584Ai::estimateScoreV(int board[4][4]){
 	it = para_col_1.find(int(parse_row));
 	if(it!= para_col_1.end()){
 		score+=it->second;
+	}else{
+		it->second=random01();
+		score+=it->second;
 	}
 	parse_row= gb.getColumn(1);
 	it = para_col_2.find(int(parse_row));
 	if(it!= para_col_2.end()){
+		score+=it->second;
+	}else{
+		it->second=random01();
 		score+=it->second;
 	}
 	parse_row= gb.getColumn(2);
 	it = para_col_3.find(int(parse_row));
 	if(it!= para_col_3.end()){
 		score+=it->second;
+	}else{
+		it->second=random01();
+		score+=it->second;
 	}
 	parse_row= gb.getColumn(3);
 	it = para_col_4.find(int(parse_row));
 	if(it!= para_col_4.end()){
+		score+=it->second;
+	}else{
+		it->second=random01();
 		score+=it->second;
 	}
 	//parse row
@@ -308,20 +324,32 @@ double Fib2584Ai::estimateScoreV(int board[4][4]){
 	it = para_row_1.find(int(parse_row));
 	if(it!= para_row_1.end()){
 		score+=it->second;
+	}else{
+		it->second=random01();
+		score+=it->second;
 	}
 	parse_row= gb.getRow(1)&1048575;
 	it = para_row_2.find(int(parse_row));
 	if(it!= para_row_2.end()){
+		score+=it->second;
+	}else{
+		it->second=random01();
 		score+=it->second;
 	}
 	parse_row= gb.getRow(2)&1048575;
 	it = para_row_3.find(int(parse_row));
 	if(it!= para_row_3.end()){
 		score+=it->second;
+	}else{
+		it->second=random01();
+		score+=it->second;
 	}
 	parse_row= gb.getRow(3)&1048575;
 	it = para_row_4.find(int(parse_row));
 	if(it!= para_row_4.end()){
+		score+=it->second;
+	}else{
+		it->second=random01();
 		score+=it->second;
 	}
 	return score;
