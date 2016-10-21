@@ -57,8 +57,8 @@ int main(int argc, char* argv[])
 			}
 			BitBoard parse= ai.parseArray(adRnBoard);
 			gameBoard.board_=parse;
-			//gameBoard.showBoard();
-			//cout<<"-------------------------------"<<endl;
+		//	gameBoard.showBoard();
+		//	cout<<"-------------------------------"<<endl;
 			
 		}
 		mean+=iScore;

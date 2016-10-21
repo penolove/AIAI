@@ -211,6 +211,8 @@ void Fib2584Ai::LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4])
 {	
 	double input[4];
 	int output[4];
+	double delta_;
+	GameBoardte gb;
 	//arg_max action
 	for(int ix=0;ix<4;ix++)
 	{
@@ -223,13 +225,12 @@ void Fib2584Ai::LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4])
 	//compute_state
 	int afsBoard_next[4][4];
 	int r=computeAfterState(adRnBoard,output,afsBoard_next,1);
-	//loss=r-score_max;
+
+	//check if the terminated()/ final afterstate_next
 	double afs_next_score;
-	GameBoardte gb;
+	double afs_score;
 	BitBoard parse= parseArray(afsBoard_next);
 	gb.board_=parse;
-
-	//check if the terminated()/ final afterstate
 	if(gb.terminated()){
 		afs_next_score=0;
 	}else{
@@ -239,10 +240,11 @@ void Fib2584Ai::LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4])
 		}else{
 			afs_next_score=estimateScoreV(afsBoard_next,0);
 		}
+		afs_score=estimateScoreV(afsBoard,0);
+		delta_=(r+afs_next_score-afs_score);
+		updateWeights(afsBoard,delta_,0.005);
 	}
-
-	double delta_=(r+afs_next_score-estimateScoreV(afsBoard,0));
-	updateWeights(afsBoard,delta_,0.001);
+//	cout<< "reward r : "<<r <<", afs_next : "<<afs_next_score<<", afs :"<<afs_score<<", delta : "<<delta_<<endl;
 }	
 void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate)
 {
