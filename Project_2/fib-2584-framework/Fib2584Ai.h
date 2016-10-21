@@ -46,12 +46,15 @@ public:
 	//================take actions==================
 	
 	
+	void generateMoveSet(int board[4][4],double output[4]);
 	double estimateScoreV(int board[4][4],int verbose);
 	//estimate the current board score using parameter_set;
 
+	void LearnEvaluation_serach(int afsBoard[4][4],int adRnBoard[4][4]);
+
 	void LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4]);
 	//used to calculate loss and update parameter;
-	void updateWeights(int board[4][4],double delta_,double learningRate);
+	void updateWeights(int board[4][4],double delta_,double learningRate,int verbose);
 	//used in LearnEvaluation to update parameter;	
 	//
 

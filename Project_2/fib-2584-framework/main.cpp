@@ -26,7 +26,9 @@ int main(int argc, char* argv[])
 	Statistic statistic;
 	statistic.setStartTime();
 	// play each round
+	int search_mean=0;
 	int mean=0;	
+	int Statistic=0;	
 	for(int i = 0;i < iPlayRounds;i++) {
 		GameBoardte gameBoard;
 		gameBoard.initialize();
@@ -36,35 +38,54 @@ int main(int argc, char* argv[])
 		int adRnBoard[4][4];
 		int output[4];
 		double input[4];
-		
-		while(!gameBoard.terminated()) {
-			gameBoard.getArrayBoard(arrayBoard);
-			MoveDirection moveDirection;
-			double score_max=0;
-			int temp=0;
-			for(int ix=0;ix<4;ix++)
-			{
-				int output_i[4];
-				output_i[0]=ix;
-				double score=ai.Evaluate(arrayBoard,output_i);
-				input[ix]=score;
+		int search_cout;
+		int h_cout;
+
+		//let serach bring us a road
+		if(1==1){	
+			while(!gameBoard.terminated()) {
+				gameBoard.getArrayBoard(arrayBoard);
+				ai.generateMoveSet(arrayBoard,input);
+				ai.getArrayRank(input,output);
+				iScore+=ai.MakeMove(arrayBoard,output,afsBoard,adRnBoard);
+				statistic.increaseOneMove();
+				if(1==1){
+					ai.LearnEvaluation(afsBoard,adRnBoard);
+				}
+				BitBoard parse= ai.parseArray(adRnBoard);
+				gameBoard.board_=parse;
+				//gameBoard.showBoard();
+				//cout<<"-------------------------------"<<endl;
+				
 			}
-			ai.getArrayRank(input,output);
-			iScore+=ai.MakeMove(arrayBoard,output,afsBoard,adRnBoard);
-			statistic.increaseOneMove();
-			if(1==1){
-				ai.LearnEvaluation(afsBoard,adRnBoard);
+			mean+=iScore;
+		}else{
+	
+			while(!gameBoard.terminated()) {
+				gameBoard.getArrayBoard(arrayBoard);
+				MoveDirection moveDirection = ai.generateMove(arrayBoard);
+				GameBoardte originalBoard = gameBoard;
+				iScore += gameBoard.move(moveDirection);
+				
+				gameBoard.getArrayBoard(afsBoard);
+
+				if(originalBoard == gameBoard)
+					continue;
+				statistic.increaseOneMove();
+				gameBoard.addRandomTile();
+				gameBoard.getArrayBoard(adRnBoard);
+				if(1==1){
+					ai.LearnEvaluation_serach(afsBoard,adRnBoard);
+				}
+
 			}
-			BitBoard parse= ai.parseArray(adRnBoard);
-			gameBoard.board_=parse;
-		//	gameBoard.showBoard();
-		//	cout<<"-------------------------------"<<endl;
-			
+			search_mean+=iScore;
 		}
-		mean+=iScore;
 		if(i%1000==0){
 			cout<<"for game "<<i<<": "<<mean/1000<<endl;
+			//cout<<"for game serach "<<i<<": "<<search_mean/50<<endl;
 			mean=0;
+			search_mean=0;
 		}
 		gameBoard.getArrayBoard(arrayBoard);
 		ai.gameOver(arrayBoard, iScore);
