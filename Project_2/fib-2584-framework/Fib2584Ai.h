@@ -6,6 +6,7 @@
 #include "Fib2584/MoveDirection.h"
 #include "Fib2584/BitBoard.h"
 #include <map>
+#include <vector>
 
 class Fib2584Ai
 {
@@ -56,7 +57,7 @@ public:
 	//used to calculate loss and update parameter;
 	void updateWeights(int board[4][4],double delta_,double learningRate,int verbose);
 	//used in LearnEvaluation to update parameter;	
-	//
+	void updateWeights_v(vector<BitBoard>& afs_v,vector<int>& scores_v);
 
 	//----------Project2 : parameter_set----------------//
 	std::map<unsigned long long ,double> para_row_1;	

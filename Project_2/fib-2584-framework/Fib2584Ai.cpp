@@ -367,6 +367,59 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 		if(verbose==1)cout<< delta_*learningRate<<"* "<<endl;
 	}
 };	
+
+void Fib2584Ai::updateWeights_v(vector<BitBoard>& afs_v,vector<int>& scores_v)
+{
+	GameBoardte gb;
+	BitBoard afsBoard_B;
+	BitBoard afsBoard_B_next;
+	int afsBoard[4][4];
+	int afsBoard_next[4][4];
+
+	//before while steal the end of game;
+	double afs_next_score=0;
+	double afs_score=0;
+	afsBoard_B=afs_v.back();
+	afs_v.pop_back();
+	gb.board_=afsBoard_B;
+	gb.getArrayBoard(afsBoard);
+	afs_score=estimateScoreV(afsBoard,0);
+	//the final reward
+	double r=scores_v.back();
+	scores_v.pop_back();
+	//calcualte delta
+	double delta_=(r+afs_next_score-afs_score);
+	updateWeights(afsBoard,delta_,0.005,0);
+	afsBoard_B_next=afsBoard_B;
+	//cout<< "reward r : "<<r <<", afs_next : "<<afs_next_score<<", afs :"<<afs_score<<", delta : "<<delta_<<endl;
+	while (!afs_v.empty())
+	{	
+		//get next action
+		afsBoard_B=afs_v.back();
+		afs_v.pop_back();
+		//get reward
+		r=scores_v.back();
+		scores_v.pop_back();
+
+		//parse board
+		gb.board_=afsBoard_B;
+		gb.getArrayBoard(afsBoard);
+		gb.board_=afsBoard_B_next;
+		gb.getArrayBoard(afsBoard_next);
+
+
+
+		afs_next_score=estimateScoreV(afsBoard_next,0);
+		afs_score=estimateScoreV(afsBoard,0);
+
+		delta_=(r+afs_next_score-afs_score);
+		updateWeights(afsBoard,delta_,0.005,0);
+		afsBoard_B_next=afsBoard_B;
+		//cout<< "reward r : "<<r <<", afs_next : "<<afs_next_score<<", afs :"<<afs_score<<", delta : "<<delta_<<endl;
+	}	
+};
+
+
 double Fib2584Ai::estimateScoreV(int board[4][4],int verbose){
 	GameBoardte gb;
 	BitBoard parse= parseArray(board);

@@ -9,6 +9,8 @@
 #include "GameBoy.h"
 #include <bitset>
 #include <algorithm>
+#include <vector>
+
 using namespace std;
 
 int main(int argc, char* argv[])
@@ -42,7 +44,7 @@ int main(int argc, char* argv[])
 		int h_cout;
 
 		//let serach bring us a road
-		if(1==1){	
+		if(1==0){	
 			while(!gameBoard.terminated()) {
 				gameBoard.getArrayBoard(arrayBoard);
 				ai.generateMoveSet(arrayBoard,input);
@@ -59,7 +61,7 @@ int main(int argc, char* argv[])
 				
 			}
 			mean+=iScore;
-		}else if(i<10000){
+		}else if(1==0){
 			//try to using search as initail guide	
 			while(!gameBoard.terminated()) {
 				gameBoard.getArrayBoard(arrayBoard);
@@ -79,14 +81,39 @@ int main(int argc, char* argv[])
 
 			}
 			search_mean+=iScore;
-		}
-		if(i%1000==0){
-			if(i<10000){
-				cout<<"for game "<<i<<": "<<mean/500<<endl;
-			}else{
-				cout<<"for game "<<i<<": "<<mean/1000<<endl;
+		}else if(1==1){
+			//trying to construct updates parameter until game endup.
+			//what I need is storing all AfsBoard, and all scores;
+			//create two vectors.
+			std::vector<BitBoard> afs_v;
+			std::vector<int> scores_v;
+			GameBoardte gb;
+			BitBoard parse;
+			int score_temp;
+			while(!gameBoard.terminated()) {
+				gameBoard.getArrayBoard(arrayBoard);
+				ai.generateMoveSet(arrayBoard,input);
+				ai.getArrayRank(input,output);
+				//push score
+				score_temp=ai.MakeMove(arrayBoard,output,afsBoard,adRnBoard);
+				scores_v.push_back(score_temp);
+				iScore+=score_temp;
+				//push board
+				parse=ai.parseArray(afsBoard);
+				afs_v.push_back(parse);
+				statistic.increaseOneMove();
+				BitBoard parse= ai.parseArray(adRnBoard);
+				gameBoard.board_=parse;
 			}
-			cout<<"for game serach "<<i<<": "<<search_mean/500<<endl;
+			ai.updateWeights_v(afs_v,scores_v);
+
+			mean+=iScore;
+		
+		}
+
+		if(i%1000==0){
+				cout<<"for game "<<i<<": "<<mean/1000<<endl;
+				//cout<<"for game serach "<<i<<": "<<search_mean/500<<endl;
 			mean=0;
 			search_mean=0;
 		}
