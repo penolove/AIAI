@@ -44,7 +44,7 @@ MoveDirection Fib2584Ai::generateMove(int board[4][4])
 	
 	//-----------------n-serachtree---------------------------
 	int score;
-	SerachTree_true(board,2,score,Move);
+	SerachTree_true(board,3,score,Move);
 	
 
 	return Move;
@@ -222,6 +222,7 @@ double Fib2584Ai::MakeMove(int board[4][4],int output[4],int afsBoard[4][4],int 
 
 void Fib2584Ai::LearnEvaluation_serach(int afsBoard[4][4],int adRnBoard[4][4]){
 	GameBoardte gb;
+	//
 	BitBoard parse= parseArray(adRnBoard);
 	gb.board_=parse;
 	MoveDirection moveDirection = generateMove(adRnBoard);
@@ -252,7 +253,7 @@ void Fib2584Ai::LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4])
 	generateMoveSet(adRnBoard,input);
 	getArrayRank(input,output);
 
-	//compute_state
+	//compute_state->afsBoard_next;
 	int afsBoard_next[4][4];
 	int r=computeAfterState(adRnBoard,output,afsBoard_next,1);
 

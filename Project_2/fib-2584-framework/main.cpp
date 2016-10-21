@@ -59,14 +59,13 @@ int main(int argc, char* argv[])
 				
 			}
 			mean+=iScore;
-		}else{
-	
+		}else if(i<10000){
+			//try to using search as initail guide	
 			while(!gameBoard.terminated()) {
 				gameBoard.getArrayBoard(arrayBoard);
 				MoveDirection moveDirection = ai.generateMove(arrayBoard);
 				GameBoardte originalBoard = gameBoard;
 				iScore += gameBoard.move(moveDirection);
-				
 				gameBoard.getArrayBoard(afsBoard);
 
 				if(originalBoard == gameBoard)
@@ -82,8 +81,12 @@ int main(int argc, char* argv[])
 			search_mean+=iScore;
 		}
 		if(i%1000==0){
-			cout<<"for game "<<i<<": "<<mean/1000<<endl;
-			//cout<<"for game serach "<<i<<": "<<search_mean/50<<endl;
+			if(i<10000){
+				cout<<"for game "<<i<<": "<<mean/500<<endl;
+			}else{
+				cout<<"for game "<<i<<": "<<mean/1000<<endl;
+			}
+			cout<<"for game serach "<<i<<": "<<search_mean/500<<endl;
 			mean=0;
 			search_mean=0;
 		}
