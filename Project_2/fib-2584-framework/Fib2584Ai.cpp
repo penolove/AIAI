@@ -150,63 +150,52 @@ void Fib2584Ai::getArrayRank(double input[4],int output[4]){
 		output[i]=idx;
 	}
 };
+
 double Fib2584Ai::random01()
 {
 	return (double)rand() / ((double)RAND_MAX + 1);
 };
-int Fib2584Ai::computeAfterState(int board[4][4],MoveDirection action,int afsBoard[4][4] )
+
+
+int Fib2584Ai::computeAfterState(int board[4][4],int output[4],int afsBoard[4][4],int mustMove)
 {
 	GameBoardte gb;
-	BitBoard parse= parseArray(board);
-	gb.board_=parse;
-	int score ;	
+	BitBoard parse = parseArray(board);
+	gb.board_ = parse;
+	int score = 0;	
+	int count = 0;
 	GameBoardte originalBoard = gb;
 	if(!gb.terminated()){
+		MoveDirection action = static_cast<MoveDirection>(output[count]);
 		score = gb.move(action);
 		while(gb==originalBoard){
-			MoveDirection Move = static_cast<MoveDirection>(rand() % 4);
-			score=gb.move(Move);
-			//score=0;
-		}	
+			if(mustMove==1){
+				count+=1;
+				MoveDirection action = static_cast<MoveDirection>(output[count]);
+				score = gb.move(action);
+			}else{
+				return score;
+			}
+		}
 	}else{
 		gb.getArrayBoard(afsBoard);
-		return -2;
+		return score;
 	}
 	gb.getArrayBoard(afsBoard);
 	return score;
 };
 
-double Fib2584Ai::Evaluate(int board[4][4],MoveDirection action)
+double Fib2584Ai::Evaluate(int board[4][4],int output[4])
 {	int afsBoard[4][4];
-	int r= computeAfterState(board,action,afsBoard);
+	int r= computeAfterState(board,output,afsBoard,0);
 	//cout<<" r is :"<<r<<endl;
 	//cout<<"estimateScoreV is :"<<estimateScoreV(afsBoard)<<endl;
 	return estimateScoreV(afsBoard)+r;
 };
 
-void Fib2584Ai::LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4])
-{	double score_max=-100;
-	MoveDirection Move = static_cast<MoveDirection>(rand() % 4);
-	//arg_max
-	for(int i=0;i<4;i++)
-	{
-		MoveDirection TrialMove = static_cast<MoveDirection>(i);
-		double score=Evaluate(adRnBoard,TrialMove);
-		if(score>score_max)
-		{
-			score_max=score;
-			Move=TrialMove;
-		}
-	}
-	//compute_state
-	int afsBoard_next[4][4];
-	int r=computeAfterState(adRnBoard,Move,afsBoard_next);
-	//loss=r-score_max;
-	double delta_=(r+estimateScoreV(afsBoard_next)-estimateScoreV(afsBoard));
-	updateWeights(afsBoard,delta_,0.0001);
-}	
-double Fib2584Ai::MakeMove(int board[4][4],MoveDirection action,int afsBoard[4][4],int adRnBoard[4][4]){
-	int r= computeAfterState(board,action,afsBoard);
+
+double Fib2584Ai::MakeMove(int board[4][4],int output[4],int afsBoard[4][4],int adRnBoard[4][4]){
+	int r= computeAfterState(board,output,afsBoard,1);
 	GameBoardte gb;
 	BitBoard parse= parseArray(afsBoard);
 	gb.board_=parse;
@@ -219,6 +208,27 @@ double Fib2584Ai::MakeMove(int board[4][4],MoveDirection action,int afsBoard[4][
 	gb.getArrayBoard(adRnBoard);
 	return r;
 };
+
+void Fib2584Ai::LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4])
+{	
+	double input[4];
+	int output[4];
+	//arg_max
+	for(int ix=0;ix<4;ix++)
+	{
+		int output_i[4];
+		output_i[0]=ix;
+		double score=Evaluate(adRnBoard,output_i);
+		input[ix]=score;
+	}
+	getArrayRank(input,output);
+	//compute_state
+	int afsBoard_next[4][4];
+	int r=computeAfterState(adRnBoard,output,afsBoard_next,1);
+	//loss=r-score_max;
+	double delta_=(r+estimateScoreV(afsBoard_next)-estimateScoreV(afsBoard));
+	updateWeights(afsBoard,delta_,0.0001);
+}	
 void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate)
 {
 	GameBoardte gb;

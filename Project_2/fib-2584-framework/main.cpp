@@ -43,20 +43,24 @@ int main(int argc, char* argv[])
 			//cout<<"evalutation"<<endl;
 			double score_max=0;
 			int temp=0;
-			for(int i=0;i<4;i++)
+			for(int ix=0;ix<4;ix++)
 			{
-				MoveDirection TrialMove = static_cast<MoveDirection>(i);
-				double score=ai.Evaluate(arrayBoard,TrialMove);
+				int output_i[4];
+				output_i[0]=ix;
+				double score=ai.Evaluate(arrayBoard,output_i);
+				input[ix]=score;
+				/*
 				if(score>score_max)
 				{
 					score_max=score;
 					moveDirection=TrialMove;
-					temp=i;
-				}
+					temp=ix;
+				}*/
 			}
+			ai.getArrayRank(input,output);
 			//cout<<"current move:"<<temp<<endl;
 			//cout<<"Make"<<endl;
-			iScore+=ai.MakeMove(arrayBoard,moveDirection,afsBoard,adRnBoard);
+			iScore+=ai.MakeMove(arrayBoard,output,afsBoard,adRnBoard);
 			statistic.increaseOneMove();
 			if(1==1){
 			//	cout<<"Learn"<<endl;
