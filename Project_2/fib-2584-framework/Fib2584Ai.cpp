@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include <limits> // used to get double minimum
+
 int Fib2584Ai::fibonacci_[32] = {0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040, 1346269, 2178309};
 Fib2584Ai::Fib2584Ai()
 {
@@ -141,6 +143,13 @@ void Fib2584Ai::SerachTree_true(int board[4][4],int iteration,int &score,MoveDir
 
 //------------------------project2-----------------------------
 
+void Fib2584Ai::getArrayRank(double input[4],int output[4]){
+	for (int i=0;i<4;i++){
+		int idx=distance(input, max_element(input, input + 4));
+		input[idx]=std::numeric_limits<double>::lowest();
+		output[i]=idx;
+	}
+};
 double Fib2584Ai::random01()
 {
 	return (double)rand() / ((double)RAND_MAX + 1);

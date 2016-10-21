@@ -25,6 +25,7 @@ public:
 	static int fibonacci_[32];
 	
 	//--------- Project2: members-I-created-------------//
+	void getArrayRank(double input[4],int output[4]);
 	double random01();
 	double MakeMove(int board[4][4],MoveDirection action,int afsBoard[4][4],int adRnBoard[4][4]);
 	//+++retrun double r , afsBoard ,adRnBoard++++//

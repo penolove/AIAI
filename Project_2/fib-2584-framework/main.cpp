@@ -34,7 +34,9 @@ int main(int argc, char* argv[])
 		int arrayBoard[4][4];
 		int afsBoard[4][4];
 		int adRnBoard[4][4];
-
+		int output[4];
+		double input[4];
+		
 		while(!gameBoard.terminated()) {
 			gameBoard.getArrayBoard(arrayBoard);
 			MoveDirection moveDirection;
