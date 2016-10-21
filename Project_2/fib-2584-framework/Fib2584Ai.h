@@ -27,18 +27,9 @@ public:
 	//--------- Project2: members-I-created-------------//
 	void getArrayRank(double input[4],int output[4]);
 	double random01();
-	/*
-	//================take actions=============
-	double MakeMove(int board[4][4],MoveDirection action,int afsBoard[4][4],int adRnBoard[4][4]);
-	//+++retrun double r , afsBoard ,adRnBoard++++//
-	int computeAfterState(int board[4][4],MoveDirection action,int afsBoard[4][4] );
-	//+++return int r , afsBoard ++++++++++++++++//
-	double Evaluate(int board[4][4],MoveDirection action);
-	//+++ return double r , Move action++++++++++//
-	//================take actions=============
-	*/
 
 	//================take actions=============
+	// output is a action set that the first element with highest score
 	double MakeMove(int board[4][4],int output[4],int afsBoard[4][4],int adRnBoard[4][4]);
 	//+++retrun double r , afsBoard ,adRnBoard++++//
 	int computeAfterState(int board[4][4],int output[4],int afsBoard[4][4],int mustMove);
@@ -46,7 +37,9 @@ public:
 	double Evaluate(int board[4][4],int output[4]);
 	//+++ return double r , Move action++++++++++//
 	//================take actions=============
-	double estimateScoreV(int board[4][4]);
+	
+	
+	double estimateScoreV(int board[4][4],int verbose);
 	void LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4]);
 	void updateWeights(int board[4][4],double loss,double learningRate);	
 	//----------Project2 : parameter_set----------------//

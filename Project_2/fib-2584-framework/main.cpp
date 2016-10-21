@@ -40,7 +40,6 @@ int main(int argc, char* argv[])
 		while(!gameBoard.terminated()) {
 			gameBoard.getArrayBoard(arrayBoard);
 			MoveDirection moveDirection;
-			//cout<<"evalutation"<<endl;
 			double score_max=0;
 			int temp=0;
 			for(int ix=0;ix<4;ix++)
@@ -49,26 +48,17 @@ int main(int argc, char* argv[])
 				output_i[0]=ix;
 				double score=ai.Evaluate(arrayBoard,output_i);
 				input[ix]=score;
-				/*
-				if(score>score_max)
-				{
-					score_max=score;
-					moveDirection=TrialMove;
-					temp=ix;
-				}*/
 			}
 			ai.getArrayRank(input,output);
-			//cout<<"current move:"<<temp<<endl;
-			//cout<<"Make"<<endl;
 			iScore+=ai.MakeMove(arrayBoard,output,afsBoard,adRnBoard);
 			statistic.increaseOneMove();
 			if(1==1){
-			//	cout<<"Learn"<<endl;
 				ai.LearnEvaluation(afsBoard,adRnBoard);
 			}
-			//cout<<"parse"<<endl;
 			BitBoard parse= ai.parseArray(adRnBoard);
 			gameBoard.board_=parse;
+			//gameBoard.showBoard();
+			//cout<<"-------------------------------"<<endl;
 			
 		}
 		mean+=iScore;

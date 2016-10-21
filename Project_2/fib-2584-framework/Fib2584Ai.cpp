@@ -5,7 +5,7 @@
 #include "Fib2584/BitBoard.h"
 #include <algorithm>
 #include <iterator>
-#include <map>
+#include <map> //used to store parameters
 #include <limits> // used to get double minimum
 
 int Fib2584Ai::fibonacci_[32] = {0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040, 1346269, 2178309};
@@ -188,9 +188,7 @@ int Fib2584Ai::computeAfterState(int board[4][4],int output[4],int afsBoard[4][4
 double Fib2584Ai::Evaluate(int board[4][4],int output[4])
 {	int afsBoard[4][4];
 	int r= computeAfterState(board,output,afsBoard,0);
-	//cout<<" r is :"<<r<<endl;
-	//cout<<"estimateScoreV is :"<<estimateScoreV(afsBoard)<<endl;
-	return estimateScoreV(afsBoard)+r;
+	return estimateScoreV(afsBoard,0)+r;
 };
 
 
@@ -226,8 +224,9 @@ void Fib2584Ai::LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4])
 	int afsBoard_next[4][4];
 	int r=computeAfterState(adRnBoard,output,afsBoard_next,1);
 	//loss=r-score_max;
-	double delta_=(r+estimateScoreV(afsBoard_next)-estimateScoreV(afsBoard));
-	updateWeights(afsBoard,delta_,0.0001);
+	//cout<< "reward r  "<<r <<", estimate AF_next: "<<estimateScoreV(afsBoard_next,0)<<",AF_: "<<estimateScoreV(afsBoard,0)<<endl;
+	double delta_=(r+estimateScoreV(afsBoard_next,0)-estimateScoreV(afsBoard,0));
+	updateWeights(afsBoard,delta_,0.005);
 }	
 void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate)
 {
@@ -271,31 +270,31 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate)
 	if(it!= para_row_1.end()){
 		it->second+=delta_*learningRate;
 	}else{
-		para_col_1[int(parse_row)]=delta_*learningRate;
+		para_row_1[int(parse_row)]=delta_*learningRate;
 	}
 	parse_row= gb.getRow(1)&1048575;
 	it = para_row_2.find(int(parse_row));
 	if(it!= para_row_2.end()){
 		it->second+=delta_*learningRate;
 	}else{
-		para_col_2[int(parse_row)]=delta_*learningRate;
+		para_row_2[int(parse_row)]=delta_*learningRate;
 	}
 	parse_row= gb.getRow(2)&1048575;
 	it = para_row_3.find(int(parse_row));
 	if(it!= para_row_3.end()){
 		it->second+=delta_*learningRate;
 	}else{
-		para_col_3[int(parse_row)]=delta_*learningRate;
+		para_row_3[int(parse_row)]=delta_*learningRate;
 	}
 	parse_row= gb.getRow(3)&1048575;
 	it = para_row_4.find(int(parse_row));
 	if(it!= para_row_4.end()){
 		it->second+=delta_*learningRate;
 	}else{
-		para_col_4[int(parse_row)]=delta_*learningRate;
+		para_row_4[int(parse_row)]=delta_*learningRate;
 	}
 };	
-double Fib2584Ai::estimateScoreV(int board[4][4]){
+double Fib2584Ai::estimateScoreV(int board[4][4],int verbose){
 	GameBoardte gb;
 	BitBoard parse= parseArray(board);
 	gb.board_=parse;
@@ -310,66 +309,83 @@ double Fib2584Ai::estimateScoreV(int board[4][4]){
 	it = para_col_1.find(int(parse_row));
 	if(it!= para_col_1.end()){
 		score+=it->second;
+		if(verbose==1)cout<<"para_col_1 : "<<it->second<<endl;
 	}else{
-		it->second=random01();
-		score+=it->second;
+		double temp=random01();
+		para_col_1[int(parse_row)]=temp;
+		score+=temp;
 	}
 	parse_row= gb.getColumn(1);
 	it = para_col_2.find(int(parse_row));
 	if(it!= para_col_2.end()){
 		score+=it->second;
+		if(verbose==1)cout<<"para_col_2 : "<<it->second<<endl;
 	}else{
-		it->second=random01();
-		score+=it->second;
+		double temp=random01();
+		para_col_2[int(parse_row)]=temp;
+		score+=temp;
 	}
 	parse_row= gb.getColumn(2);
 	it = para_col_3.find(int(parse_row));
 	if(it!= para_col_3.end()){
 		score+=it->second;
+		if(verbose==1)cout<<"para_col_3 : "<<it->second<<endl;
 	}else{
-		it->second=random01();
-		score+=it->second;
+		double temp=random01();
+		para_col_3[int(parse_row)]=temp;
+		score+=temp;
 	}
 	parse_row= gb.getColumn(3);
 	it = para_col_4.find(int(parse_row));
 	if(it!= para_col_4.end()){
 		score+=it->second;
+		if(verbose==1)cout<<"para_col_4 : "<<it->second<<endl;
 	}else{
-		it->second=random01();
-		score+=it->second;
+		double temp=random01();
+		para_col_4[int(parse_row)]=temp;
+		score+=temp;
 	}
 	//parse row
-	parse_row= gb.getRow(0)&1048575;
+	parse_row= gb.getRow(0)&0x1048575;
 	it = para_row_1.find(int(parse_row));
+	//if(verbose==1)cout<<"para_ind_1 : "<<int(parse_row)<<endl;
 	if(it!= para_row_1.end()){
 		score+=it->second;
+		if(verbose==1)cout<<"para_row_1 : "<<it->second<<endl;
 	}else{
-		it->second=random01();
-		score+=it->second;
+		double temp=random01();
+		para_row_1[int(parse_row)]=temp;
+		score+=temp;
 	}
 	parse_row= gb.getRow(1)&1048575;
 	it = para_row_2.find(int(parse_row));
 	if(it!= para_row_2.end()){
 		score+=it->second;
+		if(verbose==1)cout<<"para_row_2 : "<<it->second<<endl;
 	}else{
-		it->second=random01();
-		score+=it->second;
+		double temp=random01();
+		para_row_2[int(parse_row)]=temp;
+		score+=temp;
 	}
 	parse_row= gb.getRow(2)&1048575;
 	it = para_row_3.find(int(parse_row));
 	if(it!= para_row_3.end()){
 		score+=it->second;
+		if(verbose==1)cout<<"para_row_3 : "<<it->second<<endl;
 	}else{
-		it->second=random01();
-		score+=it->second;
+		double temp=random01();
+		para_row_3[int(parse_row)]=temp;
+		score+=temp;
 	}
 	parse_row= gb.getRow(3)&1048575;
 	it = para_row_4.find(int(parse_row));
 	if(it!= para_row_4.end()){
 		score+=it->second;
+		if(verbose==1)cout<<"para_row_4 : "<<it->second<<endl;
 	}else{
-		it->second=random01();
-		score+=it->second;
+		double temp=random01();
+		para_row_4[int(parse_row)]=temp;
+		score+=temp;
 	}
 	return score;
 };
