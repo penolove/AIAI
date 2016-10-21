@@ -211,7 +211,7 @@ void Fib2584Ai::LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4])
 {	
 	double input[4];
 	int output[4];
-	//arg_max
+	//arg_max action
 	for(int ix=0;ix<4;ix++)
 	{
 		int output_i[4];
@@ -224,9 +224,25 @@ void Fib2584Ai::LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4])
 	int afsBoard_next[4][4];
 	int r=computeAfterState(adRnBoard,output,afsBoard_next,1);
 	//loss=r-score_max;
-	//cout<< "reward r  "<<r <<", estimate AF_next: "<<estimateScoreV(afsBoard_next,0)<<",AF_: "<<estimateScoreV(afsBoard,0)<<endl;
-	double delta_=(r+estimateScoreV(afsBoard_next,0)-estimateScoreV(afsBoard,0));
-	updateWeights(afsBoard,delta_,0.005);
+	double afs_next_score;
+	GameBoardte gb;
+	BitBoard parse= parseArray(afsBoard_next);
+	gb.board_=parse;
+
+	//check if the terminated()/ final afterstate
+	if(gb.terminated()){
+		afs_next_score=0;
+	}else{
+		gb.addRandomTile();
+		if(gb.terminated()){
+			afs_next_score=0;
+		}else{
+			afs_next_score=estimateScoreV(afsBoard_next,0);
+		}
+	}
+
+	double delta_=(r+afs_next_score-estimateScoreV(afsBoard,0));
+	updateWeights(afsBoard,delta_,0.001);
 }	
 void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate)
 {
@@ -345,10 +361,9 @@ double Fib2584Ai::estimateScoreV(int board[4][4],int verbose){
 		para_col_4[int(parse_row)]=temp;
 		score+=temp;
 	}
-	//parse row
+	//-----parse row-------
 	parse_row= gb.getRow(0)&0x1048575;
 	it = para_row_1.find(int(parse_row));
-	//if(verbose==1)cout<<"para_ind_1 : "<<int(parse_row)<<endl;
 	if(it!= para_row_1.end()){
 		score+=it->second;
 		if(verbose==1)cout<<"para_row_1 : "<<it->second<<endl;
@@ -389,28 +404,6 @@ double Fib2584Ai::estimateScoreV(int board[4][4],int verbose){
 	}
 	return score;
 };
-/*
-{
-	
-	GameBoardte gb;
-	BitBoard parse= parseArray(board);
-	gb.board_=parse;
-	GameBoardte gb_row;
-	//BitBoard parse_row= gb.getrow(2)&1048575;
-	BitBoard parse_row= gb.getColumn(2);
-	gb_row.board_=parse_row;
-	cout<<"====current===="<<endl;
-	gb.showBoard();
-	cout<<"====getrow======"<<endl;
-	gb_row.showBoard();
-	int stop;
-	std::map<unsigned long long ,double>::iterator it = qqo.find(int(parse_row));
-	if(it!= qqo.end()){
-		it->second= it->second+1.0;
-	}
-	cout<<"key: "<<int(parse_row)<<", value: "<<qqo[int(parse_row)]<<endl;
-	cin>>stop;
-}*/	
 /**********************************
 You can implement any additional functions
 you may need.

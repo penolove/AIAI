@@ -24,24 +24,37 @@ public:
 	void SerachTree_true(int board[4][4],int iteration,int &score,MoveDirection &direction);	
 	static int fibonacci_[32];
 	
+
 	//--------- Project2: members-I-created-------------//
 	void getArrayRank(double input[4],int output[4]);
+	//e.g getArrayRank([5,3,4,9])=>[3,0,2,1];
+	
 	double random01();
+	//create random numbers in (0,1);
 
-	//================take actions=============
-	// output is a action set that the first element with highest score
+	//================take actions==================
+	// ----output is a action set that the first-element
+	// with highest prediction score. Used to prevent cursh.
+	// i.e output[0]=argmax_a(Evalute)
+	// i.e output[1]=argsecond_a(Evalute)
 	double MakeMove(int board[4][4],int output[4],int afsBoard[4][4],int adRnBoard[4][4]);
 	//+++retrun double r , afsBoard ,adRnBoard++++//
 	int computeAfterState(int board[4][4],int output[4],int afsBoard[4][4],int mustMove);
 	//+++return int r , afsBoard ++++++++++++++++//
 	double Evaluate(int board[4][4],int output[4]);
 	//+++ return double r , Move action++++++++++//
-	//================take actions=============
+	//================take actions==================
 	
 	
 	double estimateScoreV(int board[4][4],int verbose);
+	//estimate the current board score using parameter_set;
+
 	void LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4]);
-	void updateWeights(int board[4][4],double loss,double learningRate);	
+	//used to calculate loss and update parameter;
+	void updateWeights(int board[4][4],double delta_,double learningRate);
+	//used in LearnEvaluation to update parameter;	
+	//
+
 	//----------Project2 : parameter_set----------------//
 	std::map<unsigned long long ,double> para_row_1;	
 	std::map<unsigned long long ,double> para_row_2;	
@@ -51,7 +64,7 @@ public:
 	std::map<unsigned long long ,double> para_col_1;	
 	std::map<unsigned long long ,double> para_col_2;	
 	std::map<unsigned long long ,double> para_col_3;	
-	std::map<unsigned long long ,double> para_col_4;	
+	std::map<unsigned long long ,double> para_col_4;		
 	/**********************************
 	You can implement any additional functions
 	or define any variables you may need.

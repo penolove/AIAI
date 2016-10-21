@@ -62,8 +62,8 @@ int main(int argc, char* argv[])
 			
 		}
 		mean+=iScore;
-		if(i%300==0){
-			cout<<"for game "<<i<<": "<<mean/300<<endl;
+		if(i%1000==0){
+			cout<<"for game "<<i<<": "<<mean/1000<<endl;
 			mean=0;
 		}
 		gameBoard.getArrayBoard(arrayBoard);
