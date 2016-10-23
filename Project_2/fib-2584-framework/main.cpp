@@ -111,8 +111,8 @@ int main(int argc, char* argv[])
 		
 		}
 
-		if(i%1000==0){
-				cout<<"for game "<<i<<": "<<mean/1000<<endl;
+		if(i%3000==0){
+				cout<<"for game "<<i<<": "<<mean/3000<<endl;
 				//cout<<"for game serach "<<i<<": "<<search_mean/500<<endl;
 			mean=0;
 			search_mean=0;

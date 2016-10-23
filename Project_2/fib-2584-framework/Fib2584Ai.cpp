@@ -408,12 +408,11 @@ void Fib2584Ai::updateWeights_v(vector<BitBoard>& afs_v,vector<int>& scores_v)
 		gb.getArrayBoard(afsBoard_next);
 
 
-
 		afs_next_score=estimateScoreV(afsBoard_next,0);
 		afs_score=estimateScoreV(afsBoard,0);
 
 		delta_=(r+afs_next_score-afs_score);
-		updateWeights(afsBoard,delta_,0.005,0);
+		updateWeights(afsBoard,delta_,0.001,0);
 		afsBoard_B_next=afsBoard_B;
 		//cout<< "reward r : "<<r <<", afs_next : "<<afs_next_score<<", afs :"<<afs_score<<", delta : "<<delta_<<endl;
 	}	
