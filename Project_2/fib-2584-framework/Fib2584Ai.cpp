@@ -286,6 +286,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_col_1.find(int(parse_row));
 	if(it!= para_col_1.end())
 	{
+		it->second*=0.99995;
 		it->second+=(delta_*learningRate);
 		if(verbose==1) cout<< it->second<<" ";
 	}else{
@@ -297,6 +298,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_col_2.find(int(parse_row));
 	if(it!= para_col_2.end())
 	{
+		it->second*=0.99995;
 		it->second+=(delta_*learningRate);
 		if(verbose==1) cout<< it->second<<" ";
 	}else{
@@ -308,6 +310,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_col_3.find(int(parse_row));
 	if(it!= para_col_3.end())
 	{
+		it->second*=0.99995;
 		it->second+=(delta_*learningRate);
 		if(verbose==1)cout<< it->second<<" ";
 	}else{
@@ -318,6 +321,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_col_4.find(int(parse_row));
 	if(it!= para_col_4.end())
 	{
+		it->second*=0.99995;
 		it->second+=(delta_*learningRate);
 		if(verbose==1)cout<< it->second<<endl;
 	}else{
@@ -330,6 +334,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_row_1.find(int(parse_row));
 	if(it!= para_row_1.end())
 	{
+		it->second*=0.99995;
 		it->second+=(delta_*learningRate);
 		if(verbose==1)cout<< it->second<<" ";
 	}else{
@@ -340,6 +345,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_row_2.find(int(parse_row));
 	if(it!= para_row_2.end())
 	{
+		it->second*=0.99995;
 		it->second+=(delta_*learningRate);
 		if(verbose==1)cout<< it->second<<" ";
 	}else{
@@ -350,6 +356,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_row_3.find(int(parse_row));
 	if(it!= para_row_3.end())
 	{
+		it->second*=0.99995;
 		it->second+=(delta_*learningRate);
 		if(verbose==1)cout<< it->second<<" ";
 	}else{
@@ -360,6 +367,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_row_4.find(int(parse_row));
 	if(it!= para_row_4.end())
 	{
+		it->second*=0.99995;
 		it->second+=delta_*learningRate;
 		if(verbose==1)cout<< it->second<<endl;
 	}else{
@@ -412,7 +420,7 @@ void Fib2584Ai::updateWeights_v(vector<BitBoard>& afs_v,vector<int>& scores_v)
 		afs_score=estimateScoreV(afsBoard,0);
 
 		delta_=(r+afs_next_score-afs_score);
-		updateWeights(afsBoard,delta_,0.001,0);
+		updateWeights(afsBoard,delta_,0.005,0);
 		afsBoard_B_next=afsBoard_B;
 		//cout<< "reward r : "<<r <<", afs_next : "<<afs_next_score<<", afs :"<<afs_score<<", delta : "<<delta_<<endl;
 	}	
