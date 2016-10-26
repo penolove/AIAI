@@ -43,8 +43,8 @@ int main(int argc, char* argv[])
 		int search_cout;
 		int h_cout;
 
-		//let serach bring us a road
 		if(1==0){	
+			//for each step calculate once
 			while(!gameBoard.terminated()) {
 				gameBoard.getArrayBoard(arrayBoard);
 				ai.generateMoveSet(arrayBoard,input);
@@ -94,25 +94,35 @@ int main(int argc, char* argv[])
 				gameBoard.getArrayBoard(arrayBoard);
 				ai.generateMoveSet(arrayBoard,input);
 				ai.getArrayRank(input,output);
-				//push score
+				//=====push score======
 				score_temp=ai.MakeMove(arrayBoard,output,afsBoard,adRnBoard);
 				scores_v.push_back(score_temp);
 				iScore+=score_temp;
-				//push board
+				//=====push score======
+				
+				//======push board------
 				parse=ai.parseArray(afsBoard);
 				afs_v.push_back(parse);
+				//======push board------
+				
+
 				statistic.increaseOneMove();
 				BitBoard parse= ai.parseArray(adRnBoard);
 				gameBoard.board_=parse;
 			}
-			ai.updateWeights_v(afs_v,scores_v);
-
+			//Td0
+			//ai.updateWeights_v(afs_v,scores_v);
+			//Td1
+			//ai.updateWeights_v_td1(afs_v,scores_v);
+			//Td(lambda)
+			ai.updateWeights_v_td(afs_v,scores_v,0.5);
+		
 			mean+=iScore;
 		
 		}
 
-		if(i%3000==0){
-				cout<<"for game "<<i<<": "<<mean/3000<<endl;
+		if(i%1000==0){
+				cout<<"for game "<<i<<": "<<mean/1000<<endl;
 				//cout<<"for game serach "<<i<<": "<<search_mean/500<<endl;
 			mean=0;
 			search_mean=0;

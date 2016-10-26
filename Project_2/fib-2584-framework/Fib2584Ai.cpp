@@ -7,7 +7,7 @@
 #include <iterator>
 #include <map> //used to store parameters
 #include <limits> // used to get double minimum
-
+#include <math.h> // used pow
 int Fib2584Ai::fibonacci_[32] = {0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040, 1346269, 2178309};
 Fib2584Ai::Fib2584Ai()
 {
@@ -237,7 +237,9 @@ void Fib2584Ai::LearnEvaluation_serach(int afsBoard[4][4],int adRnBoard[4][4]){
 	}
 	double afs_score=estimateScoreV(afsBoard,0);
 	double delta_=(r+afs_next_score-afs_score);
-	updateWeights(afsBoard,delta_,0.0050,0);
+	double weightdecay=0.99995;
+	double lR=0.005;
+	updateWeights(afsBoard,delta_,lR,weightdecay,0);
 //	cout<< "--reward r : "<<r <<", afs_next : "<<afs_next_score<<", afs :"<<afs_score<<", delta : "<<delta_<<endl;
 };
 
@@ -268,12 +270,14 @@ void Fib2584Ai::LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4])
 	}else{
 		afs_next_score=estimateScoreV(afsBoard_next,0);
 	}
+	double weightdecay=0.99995;
+	double lR=0.005;
 	afs_score=estimateScoreV(afsBoard,0);
 	delta_=(r+afs_next_score-afs_score);
-	updateWeights(afsBoard,delta_,0.005,0);
+	updateWeights(afsBoard,delta_,lR,weightdecay,0);
 //	cout<< "reward r : "<<r <<", afs_next : "<<afs_next_score<<", afs :"<<afs_score<<", delta : "<<delta_<<endl;
 }	
-void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,int verbose)
+void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,double weightdecay,int verbose)
 {
 	GameBoardte gb;
 	BitBoard parse= parseArray(board);
@@ -286,7 +290,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_col_1.find(int(parse_row));
 	if(it!= para_col_1.end())
 	{
-		it->second*=0.99995;
+		it->second*=weightdecay;
 		it->second+=(delta_*learningRate);
 		if(verbose==1) cout<< it->second<<" ";
 	}else{
@@ -298,7 +302,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_col_2.find(int(parse_row));
 	if(it!= para_col_2.end())
 	{
-		it->second*=0.99995;
+		it->second*=weightdecay;
 		it->second+=(delta_*learningRate);
 		if(verbose==1) cout<< it->second<<" ";
 	}else{
@@ -310,7 +314,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_col_3.find(int(parse_row));
 	if(it!= para_col_3.end())
 	{
-		it->second*=0.99995;
+		it->second*=weightdecay;
 		it->second+=(delta_*learningRate);
 		if(verbose==1)cout<< it->second<<" ";
 	}else{
@@ -321,7 +325,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_col_4.find(int(parse_row));
 	if(it!= para_col_4.end())
 	{
-		it->second*=0.99995;
+		it->second*=weightdecay;
 		it->second+=(delta_*learningRate);
 		if(verbose==1)cout<< it->second<<endl;
 	}else{
@@ -334,7 +338,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_row_1.find(int(parse_row));
 	if(it!= para_row_1.end())
 	{
-		it->second*=0.99995;
+		it->second*=weightdecay;
 		it->second+=(delta_*learningRate);
 		if(verbose==1)cout<< it->second<<" ";
 	}else{
@@ -345,7 +349,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_row_2.find(int(parse_row));
 	if(it!= para_row_2.end())
 	{
-		it->second*=0.99995;
+		it->second*=weightdecay;
 		it->second+=(delta_*learningRate);
 		if(verbose==1)cout<< it->second<<" ";
 	}else{
@@ -356,7 +360,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_row_3.find(int(parse_row));
 	if(it!= para_row_3.end())
 	{
-		it->second*=0.99995;
+		it->second*=weightdecay;
 		it->second+=(delta_*learningRate);
 		if(verbose==1)cout<< it->second<<" ";
 	}else{
@@ -367,7 +371,7 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	it = para_row_4.find(int(parse_row));
 	if(it!= para_row_4.end())
 	{
-		it->second*=0.99995;
+		it->second*=weightdecay;
 		it->second+=delta_*learningRate;
 		if(verbose==1)cout<< it->second<<endl;
 	}else{
@@ -376,8 +380,86 @@ void Fib2584Ai::updateWeights(int board[4][4],double delta_,double learningRate,
 	}
 };	
 
+void Fib2584Ai::updateWeights_v_td(vector<BitBoard>& afs_v,vector<int>& scores_v,double lambda){
+
+	//TD(lambda)
+	GameBoardte gb;
+	int afsBoard[4][4];
+	int afsBoard_next[4][4];
+	
+	double weightdecay=0.99995;
+	double lR=0.005;
+	double afs_score;
+	double afs_next_score;
+	//for the first term;
+	//double delta_ = 0;
+	for(int i=0; i < afs_v.size(); i++){
+		gb.board_=afs_v[i];
+		gb.getArrayBoard(afsBoard);
+		//cout<<"============"<<endl;
+		//gb.showBoard();
+		//cout<<"============"<<endl;
+		afs_score=estimateScoreV(afsBoard,0);
+		double delta=0;
+		double r_final=0;
+		double r=0;
+		double count=0;
+		for(int j=i+1;j<afs_v.size();j++){
+			gb.board_=afs_v[j];
+			gb.getArrayBoard(afsBoard_next);
+			afs_next_score=estimateScoreV(afsBoard_next,0);
+			r_final+=scores_v[j-1];
+			delta+=(r_final+afs_next_score-afs_score)*pow(lambda,count);
+			count+=1;
+			/*
+			if(j==i+1){
+				cout<<"current i,j,afs_next,delta : "<<i<<", "<<j\
+				<<", "<<afs_next_score\
+				<<", "<<delta<<endl;
+			}*/
+		}
+			//cout<<"current i : "<<i<<endl;
+		delta*=(1-lambda);
+		r_final+=scores_v.back();
+			//cout<<"current r_final,afs_score : "<<r_final<<", "<<afs_score<<endl;
+		delta+=(pow(lambda,count)*(r_final-afs_score));
+			//cout<<"current delta : "<<delta<<endl;
+		
+		updateWeights(afsBoard,delta,lR,weightdecay,0);
+	}
+};
+
+void Fib2584Ai::updateWeights_v_td1(vector<BitBoard>& afs_v,vector<int>& scores_v)
+{
+	//TD(0)
+	GameBoardte gb;
+	BitBoard afsBoard_B;
+	int afsBoard[4][4];
+
+	//before while steal the end of game;
+	double afs_score=0;
+	double weightdecay=0.99995;
+	double lR=0.001;
+	double r=0;
+	while (!afs_v.empty())
+	{	
+		//get next action
+		afsBoard_B=afs_v.back();
+		afs_v.pop_back();
+		//get reward
+		r+=scores_v.back();
+		scores_v.pop_back();
+
+		gb.board_=afsBoard_B;
+		gb.getArrayBoard(afsBoard);
+		afs_score=estimateScoreV(afsBoard,0);
+		double delta_=(r-afs_score);
+		updateWeights(afsBoard,delta_,lR,weightdecay,0);
+	}	
+};
 void Fib2584Ai::updateWeights_v(vector<BitBoard>& afs_v,vector<int>& scores_v)
 {
+	//TD(0)
 	GameBoardte gb;
 	BitBoard afsBoard_B;
 	BitBoard afsBoard_B_next;
@@ -387,6 +469,8 @@ void Fib2584Ai::updateWeights_v(vector<BitBoard>& afs_v,vector<int>& scores_v)
 	//before while steal the end of game;
 	double afs_next_score=0;
 	double afs_score=0;
+	double weightdecay=0.99995;
+	double lR=0.00025;
 	afsBoard_B=afs_v.back();
 	afs_v.pop_back();
 	gb.board_=afsBoard_B;
@@ -397,7 +481,7 @@ void Fib2584Ai::updateWeights_v(vector<BitBoard>& afs_v,vector<int>& scores_v)
 	scores_v.pop_back();
 	//calcualte delta
 	double delta_=(r+afs_next_score-afs_score);
-	updateWeights(afsBoard,delta_,0.005,0);
+	updateWeights(afsBoard,delta_,lR,weightdecay,0);
 	afsBoard_B_next=afsBoard_B;
 	//cout<< "reward r : "<<r <<", afs_next : "<<afs_next_score<<", afs :"<<afs_score<<", delta : "<<delta_<<endl;
 	while (!afs_v.empty())
@@ -420,7 +504,7 @@ void Fib2584Ai::updateWeights_v(vector<BitBoard>& afs_v,vector<int>& scores_v)
 		afs_score=estimateScoreV(afsBoard,0);
 
 		delta_=(r+afs_next_score-afs_score);
-		updateWeights(afsBoard,delta_,0.005,0);
+		updateWeights(afsBoard,delta_,lR,weightdecay,0);
 		afsBoard_B_next=afsBoard_B;
 		//cout<< "reward r : "<<r <<", afs_next : "<<afs_next_score<<", afs :"<<afs_score<<", delta : "<<delta_<<endl;
 	}	

@@ -55,10 +55,13 @@ public:
 
 	void LearnEvaluation(int afsBoard[4][4],int adRnBoard[4][4]);
 	//used to calculate loss and update parameter;
-	void updateWeights(int board[4][4],double delta_,double learningRate,int verbose);
+	void updateWeights(int board[4][4],double delta_,double learningRate,double weightdecay,int verbose);
 	//used in LearnEvaluation to update parameter;	
 	void updateWeights_v(vector<BitBoard>& afs_v,vector<int>& scores_v);
-
+	void updateWeights_v_td1(vector<BitBoard>& afs_v,vector<int>& scores_v);
+	void updateWeights_v_td(vector<BitBoard>& afs_v,vector<int>& scores_v,double lambda);
+	//used in main() to update parameter;
+		
 	//----------Project2 : parameter_set----------------//
 	std::map<unsigned long long ,double> para_row_1;	
 	std::map<unsigned long long ,double> para_row_2;	
