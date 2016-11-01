@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 				ai.getArrayRank(input,output);
 				iScore+=ai.MakeMove(arrayBoard,output,afsBoard,adRnBoard);
 				statistic.increaseOneMove();
-				if(1==0){
+				if(1==1){
 					ai.LearnEvaluation(afsBoard,adRnBoard);
 				}
 				BitBoard parse= ai.parseArray(adRnBoard);
