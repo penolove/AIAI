@@ -1,4 +1,4 @@
-#ifndef __FIB2584AI_H__
+#fndef __FIB2584AI_H__
 #define __FIB2584AI_H__
 
 #include <cstdlib>

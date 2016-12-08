@@ -37,9 +37,9 @@ BitBoard Fib2584Ai::parseArray(int board[4][4]){
 MoveDirection Fib2584Ai::generateMove(int board[4][4])
 {
 	//MoveDirection Move= SerachTree(board,2);
-	//int score;
+	int score;
 	MoveDirection Move = static_cast<MoveDirection>(rand() % 4);
-	//SerachTree_true(board,3,score,Move);
+	SerachTree_true(board,3,score,Move);
 	return Move;
 }
 
@@ -65,6 +65,7 @@ MoveDirection Fib2584Ai::SerachTree(int board[4][4],int iteration)
 		gb.board_=parse_temp;
 		MoveDirection TrialMove = static_cast<MoveDirection>(i);
 		GameBoardte originalBoard = gb;
+		//calculate score;
 		simuScore[i]+=gb.move(TrialMove);
 		
 		if(originalBoard == gb){
